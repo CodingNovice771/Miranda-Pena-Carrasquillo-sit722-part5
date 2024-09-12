@@ -1,0 +1,38 @@
+# Deployment file for the book-catalog microservice 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: book-catalog-deployment
+  labels:
+    app: book-catalog
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: book-catalog
+  template:
+    metadata:
+      labels:
+        app: book-catalog
+    spec:
+      containers:
+      - name: book-catalog
+        image: $CONTAINER_REGISTRY/book_catalog:$VERSION 
+        ports:
+        - containerPort: 8000
+        env:
+        - name: DATABASE_URL
+          value: "postgresql://miranda_pena_carrasquillo:5K0QsSQvdlIUFeizNDewOvul7jdPGs6z@dpg-crfskcbv2p9s73a2b9lg-a.singapore-postgres.render.com/library_db_izwe"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: book-catalog-service
+spec:
+  selector:
+    app: book-catalog
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000
+  type: LoadBalancer

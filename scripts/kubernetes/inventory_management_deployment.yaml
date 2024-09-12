@@ -1,0 +1,38 @@
+# Deployment file for the inventory-management microservice
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: inventory-management-deployment
+  labels:
+    app: inventory-management
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: inventory-management
+  template:
+    metadata:
+      labels:
+        app: inventory-management
+    spec:
+      containers:
+      - name: inventory-management
+        image: $CONTAINER_REGISTRY/inventory_management:$VERSION
+        ports:
+        - containerPort: 8000
+        env:
+        - name: DATABASE_URL
+          value: "postgresql://miranda_pena_carrasquillo:5K0QsSQvdlIUFeizNDewOvul7jdPGs6z@dpg-crfskcbv2p9s73a2b9lg-a.singapore-postgres.render.com/library_db_izwe"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: inventory-management-service
+spec:
+  selector:
+    app: inventory-management
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000
+  type: LoadBalancer
